@@ -42,7 +42,7 @@ if ($err) {
     $payMetArray = ["", "Cartao de credito", "Debito online (TEF)", "Saldo PagSeguro", "Oi Paggo", "Deposito em conta"];
     $payMetResult = $payMetArray["$payMet"];
 
-    if ($status) {
+    if ($status == 3) {
        try {
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             // set the PDO error mode to exception

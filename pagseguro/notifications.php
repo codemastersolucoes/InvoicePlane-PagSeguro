@@ -1,6 +1,7 @@
 <?php
 include_once("config.php");
 $code = $_POST['notificationCode'];
+$type = $_POST['notificationType'];
 $date = date('Y-m-d H:i:s');
 $date2 = date('Y-m-d');
 
@@ -80,5 +81,12 @@ if ($err) {
     }
 
 }
+
+//log
+$name = 'log.txt';
+$text = "date: " .$date. ", notificationCode: " .$code. ", notificationType: " .$type. ";\n";
+$file = fopen($name, 'a');
+fwrite($file, $text);
+fclose($file);
 
 ?>

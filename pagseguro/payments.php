@@ -1,21 +1,26 @@
 <?php
-include_once("config.php");
+
+require "config.php";
 
 $itemId1 = $_POST['id'];
-$itemDescription1 = rawurlencode($corporation ." ". $itemId1);
+$itemDescription1 = rawurlencode(APP_CORPORATION ." ". $itemId1);
 $itemAmount1 = $_POST['price'];
 $itemQuantity1 = "1";
 
-if ($environment == "sandbox"){
-    $url = "https://ws.sandbox.pagseguro.uol.com.br/v2/checkout/?email=$email&token=$tokenSandbox&currency=$currency&itemId1=$itemId1&itemDescription1=$itemDescription1&itemAmount1=$itemAmount1&itemQuantity1=$itemQuantity1";
-} elseif ($environment == "production"){
-    $url = "https://ws.pagseguro.uol.com.br/v2/checkout/?email=$email&token=$tokenProduction&currency=$currency&itemId1=$itemId1&itemDescription1=$itemDescription1&itemAmount1=$itemAmount1&itemQuantity1=$itemQuantity1";
+if ( APP_PAYMENT_METHOD_ID == "sandbox" ) {
+
+    $endpoint = "https://ws.sandbox.pagseguro.uol.com.br/v2/checkout/?email=". APP_MAIL ."&token=". APP_TOKEN_SANDBOX ."&currency=". APP_CURRENCY ."&itemId1=$itemId1&itemDescription1=$itemDescription1&itemAmount1=$itemAmount1&itemQuantity1=$itemQuantity1";
+
+} elseif ( APP_PAYMENT_METHOD_ID == "production" ) {
+
+    $endpoint = "https://ws.pagseguro.uol.com.br/v2/checkout/?email=". APP_MAIL ."&token=". APP_TOKEN_PRODUCTION ."&currency=". APP_CURRENCY ."&itemId1=$itemId1&itemDescription1=$itemDescription1&itemAmount1=$itemAmount1&itemQuantity1=$itemQuantity1";
+
 }
 
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => $url,
+  CURLOPT_URL => $endpoint,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -28,19 +33,23 @@ curl_setopt_array($curl, array(
 ));
 
 $response = curl_exec($curl);
-$err = curl_error($curl);
+$error = curl_error($curl);
 
 curl_close($curl);
 
-if ($err) {
-    echo "cURL Error #:" . $err;
+if ( $error ) {
+    echo "cURL Error #:". $error;
 } else {
     $xml= simplexml_load_string($response);
 
-    if ($environment == "sandbox"){
-        header("Location: https://sandbox.pagseguro.uol.com.br/v2/checkout/payment.html?code=".$xml->code."");
-    } elseif ($environment == "production"){
-        header("Location: https://pagseguro.uol.com.br/v2/checkout/payment.html?code=".$xml->code."");
+    if ( APP_PAYMENT_METHOD_ID == "sandbox" ) {
+
+        header("Location: https://sandbox.pagseguro.uol.com.br/v2/checkout/payment.html?code=". $xml->code);
+
+    } elseif ( APP_PAYMENT_METHOD_ID == "production" ){
+
+        header("Location: https://pagseguro.uol.com.br/v2/checkout/payment.html?code=". $xml->code);
+
     }
 
 }

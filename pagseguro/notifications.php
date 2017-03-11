@@ -1,20 +1,27 @@
 <?php
-include_once("config.php");
+
+require "config.php";
+
 $code = $_POST['notificationCode'];
 $type = $_POST['notificationType'];
 $date = date('Y-m-d H:i:s');
 $date2 = date('Y-m-d');
+$payment_method_id = APP_PAYMENT_METHOD_ID;
 
-if ($environment == "sandbox"){
-    $url = "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications/$code?email=$email&token=$tokenSandbox";
-} elseif ($environment == "production"){
-    $url = "https://ws.pagseguro.uol.com.br/v3/transactions/notifications/$code?email=$email&token=$tokenProduction";
+if ( APP_PAYMENT_METHOD_ID == "sandbox" ) {
+
+    $endpoint = "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications/$code?email=". APP_MAIL ."&token=". APP_TOKEN_SANDBOX;
+
+} elseif ( APP_PAYMENT_METHOD_ID == "production" ) {
+
+    $endpoint = "https://ws.pagseguro.uol.com.br/v3/transactions/notifications/$code?email=". APP_MAIL ."&token=". APP_TOKEN_PRODUCTION;
+
 }
 
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => $url,
+  CURLOPT_URL => $endpoint,
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -44,8 +51,9 @@ if ($err) {
     $payMetResult = $payMetArray["$payMet"];
 
     if ($status == 3) {
+
        try {
-            $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+            $conn = new PDO("mysql:host=". APP_DB_LOCAL .";dbname=". APP_DB_NAME, APP_DB_USER, APP_DB_PASS);
             // set the PDO error mode to exception
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -55,7 +63,7 @@ if ($err) {
             // execute the query
             $stmt->execute();
             // echo a message to say the UPDATE succeeded
-            echo $stmt->rowCount() . " records UPDATED successfully";
+            echo $stmt->rowCount() ." records UPDATED successfully";
 
             $sql2 = "UPDATE ip_invoice_amounts SET invoice_balance='0', invoice_paid='$paid' WHERE invoice_id='$id'";
             // Prepare statement
@@ -63,12 +71,13 @@ if ($err) {
             // execute the query
             $stmt2->execute();
             // echo a message to say the UPDATE succeeded
-            echo $stmt2->rowCount() . " records UPDATED successfully";
+            echo $stmt2->rowCount() ." records UPDATED successfully";
 
             $sql3 = "INSERT INTO ip_payments (invoice_id, payment_method_id, payment_date, payment_amount, payment_note)
             VALUES ('$id', '$payment_method_id', '$date2', '$paid', '$payMetResult')";
             // use exec() because no results are returned
             $conn->exec($sql3);
+
             }
         catch(PDOException $e)
             {
@@ -76,8 +85,11 @@ if ($err) {
             }
 
         $conn = null;
+
     } else {
+
         echo "Status: " .$status;
+
     }
 
 }

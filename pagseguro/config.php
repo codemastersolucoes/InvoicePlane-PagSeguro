@@ -1,7 +1,7 @@
 <?php
 
 define("APP_ENVIRONMENT", "sandbox"); //sandbox or production
-define("APP_MAIL", "");
+define("APP_MAIL", ""); //PagSeguro user
 define("APP_TOKEN_SANDBOX", ""); //token sandbox
 define("APP_TOKEN_PRODUCTION", ""); //token production
 

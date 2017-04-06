@@ -41,7 +41,7 @@
 
             <!-- InvoicePlane-PagSeguro	-->                
                 <?php if ($invoice->invoice_balance > 0) { ?>
-                    <form method="POST" action="https://YOUR_URL/pagseguro/payments.php">
+                    <form method="POST" action="<?php echo $config['base_url']; ?>/pagseguro/payments.php">
                         <input name="id" id="id" type="hidden" value="<?php echo $invoice->invoice_number; ?>"> 
                         <input name="price" id="price" type="hidden" value="<?php echo $invoice->invoice_balance; ?>">  
                         <input alt="Pague com PagSeguro" name="submit"  type="image" src="https://p.simg.uol.com.br/out/pagseguro/i/botoes/pagamentos/120x53-pagar.gif"/> 

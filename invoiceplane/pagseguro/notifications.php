@@ -1,5 +1,6 @@
 <?php
 
+header("access-control-allow-origin: https://pagseguro.uol.com.br");
 header("access-control-allow-origin: https://sandbox.pagseguro.uol.com.br");
 require "config.php";
 $endpoint = GATEWAY_URL_NOTIFICATIONS ."/". $_REQUEST['notificationCode'] ."?email=". GATEWAY_MAIL ."&token=". GATEWAY_TOKEN;

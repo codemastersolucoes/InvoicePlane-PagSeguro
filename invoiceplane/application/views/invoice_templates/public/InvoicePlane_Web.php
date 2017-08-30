@@ -1,52 +1,52 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="<?php echo trans('cldr'); ?>">
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title><?php
-        if ($this->mdl_settings->setting('custom_title') != '') {
-            echo $this->mdl_settings->setting('custom_title');
-        } else {
-            echo 'InvoicePlane';
-        } ?> - <?php echo trans('invoice'); ?> <?php echo $invoice->invoice_number; ?></title>
+    <title>
+        <?php echo get_setting('custom_title', 'InvoicePlane', true); ?>
+        - <?php echo trans('invoice'); ?> <?php echo $invoice->invoice_number; ?>
+    </title>
 
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/default/css/style.css">
-    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/default/css/custom.css">
-
+    <link rel="stylesheet"
+          href="<?php echo base_url(); ?>assets/<?php echo get_setting('system_theme', 'invoiceplane'); ?>/css/style.css">
+    <link rel="stylesheet" href="<?php echo base_url(); ?>assets/core/css/custom.css">
 </head>
 <body>
 
 <div class="container">
-
     <div id="content">
 
         <div class="webpreview-header">
 
-            <h2><?php echo trans('invoice'); ?><?php echo $invoice->invoice_number; ?></h2>
+            <h2><?php echo trans('invoice'); ?>&nbsp;<?php echo $invoice->invoice_number; ?></h2>
 
             <div class="btn-group">
+                <?php if ($invoice->sumex_id == NULL) : ?>
                 <a href="<?php echo site_url('guest/view/generate_invoice_pdf/' . $invoice_url_key); ?>"
                    class="btn btn-primary">
-                    <i
-                        class="fa fa-print"></i> <?php echo trans('download_pdf'); ?>
-                </a>
-                <?php if ($this->mdl_settings->setting('merchant_enabled') == 1 and $invoice->invoice_balance > 0) { ?>
-                <a
-                    href="<?php echo site_url('guest/payment_handler/make_payment/' . $invoice_url_key); ?>"
-                    class="btn btn-success"><i class="fa fa-credit-card"></i> <?php echo trans('pay_now'); ?>
-                    </a><?php } ?>
+                    <?php else : ?>
+                    <a href="<?php echo site_url('guest/view/generate_sumex_pdf/' . $invoice_url_key); ?>"
+                       class="btn btn-primary">
+                        <?php endif; ?>
+                        <i class="fa fa-print"></i> <?php echo trans('download_pdf'); ?>
+                    </a>
+                    <?php if (get_setting('enable_online_payments') == 1 && $invoice->invoice_balance > 0) { ?>
+                        <a href="<?php echo site_url('guest/payment_information/form/' . $invoice_url_key); ?>"
+                           class="btn btn-success">
+                            <i class="fa fa-credit-card"></i> <?php echo trans('pay_now'); ?>
+                        </a>
+                    <?php } ?>
 
-            <!-- InvoicePlane-PagSeguro	-->                
-                <?php if ($invoice->invoice_balance > 0) { ?>
-                    <form method="POST" action="<?php echo $config['base_url']; ?>/pagseguro/payments.php">
-                        <input name="id" id="id" type="hidden" value="<?php echo $invoice->invoice_number; ?>"> 
-                        <input name="price" id="price" type="hidden" value="<?php echo $invoice->invoice_balance; ?>">  
-                        <input alt="Pague com PagSeguro" name="submit"  type="image" src="https://p.simg.uol.com.br/out/pagseguro/i/botoes/pagamentos/120x53-pagar.gif"/> 
-                    </form> 
-                <?php } ?>
+                    <!-- PagSeguro -->
+                    <?php if ( $invoice->invoice_balance > 0 ) : ?>
+                      <a href="<?php echo base_url() ."pagseguro/payments.php?name=". $invoice->user_name ."&number=". $invoice->invoice_number ."&balance=". $invoice->invoice_balance; ?>"
+                        class="btn btn-success"> Pague com PagSeguro
+                      </a>
+                    <?php endif; ?>
 
             </div>
 
@@ -54,13 +54,7 @@
 
         <hr>
 
-        <?php if ($flash_message) { ?>
-            <div class="alert alert-info">
-                <?php echo $flash_message; ?>
-            </div>
-        <?php } else {
-            echo '<br>';
-        } ?>
+        <?php echo $this->layout->load_view('layout/alerts'); ?>
 
         <div class="invoice">
 
@@ -74,7 +68,7 @@
             <div class="row">
                 <div class="col-xs-12 col-md-6 col-lg-5">
 
-                    <h4><?php echo $invoice->user_name; ?></h4>
+                    <h4><?php _htmlsc($invoice->user_name); ?></h4>
                     <p><?php if ($invoice->user_vat_id) {
                             echo lang("vat_id_short") . ": " . $invoice->user_vat_id . '<br>';
                         } ?>
@@ -82,30 +76,30 @@
                             echo lang("tax_code_short") . ": " . $invoice->user_tax_code . '<br>';
                         } ?>
                         <?php if ($invoice->user_address_1) {
-                            echo $invoice->user_address_1 . '<br>';
+                            echo htmlsc($invoice->user_address_1) . '<br>';
                         } ?>
                         <?php if ($invoice->user_address_2) {
-                            echo $invoice->user_address_2 . '<br>';
+                            echo htmlsc($invoice->user_address_2) . '<br>';
                         } ?>
                         <?php if ($invoice->user_city) {
-                            echo $invoice->user_city . ' ';
+                            echo htmlsc($invoice->user_city) . ' ';
                         } ?>
                         <?php if ($invoice->user_state) {
-                            echo $invoice->user_state . ' ';
+                            echo htmlsc($invoice->user_state) . ' ';
                         } ?>
                         <?php if ($invoice->user_zip) {
-                            echo $invoice->user_zip . '<br>';
+                            echo htmlsc($invoice->user_zip) . '<br>';
                         } ?>
-                        <?php if ($invoice->user_phone) { ?><?php echo trans('phone_abbr'); ?>: <?php echo $invoice->user_phone; ?>
+                        <?php if ($invoice->user_phone) { ?><?php echo trans('phone_abbr'); ?>: <?php echo htmlsc($invoice->user_phone); ?>
                             <br><?php } ?>
-                        <?php if ($invoice->user_fax) { ?><?php echo trans('fax_abbr'); ?>: <?php echo $invoice->user_fax; ?><?php } ?>
+                        <?php if ($invoice->user_fax) { ?><?php echo trans('fax_abbr'); ?>: <?php echo htmlsc($invoice->user_fax); ?><?php } ?>
                     </p>
 
                 </div>
                 <div class="col-lg-2"></div>
                 <div class="col-xs-12 col-md-6 col-lg-5 text-right">
 
-                    <h4><?php echo $invoice->client_name; ?></h4>
+                    <h4><?php _htmlsc(format_client($invoice)); ?></h4>
                     <p><?php if ($invoice->client_vat_id) {
                             echo lang("vat_id_short") . ": " . $invoice->client_vat_id . '<br>';
                         } ?>
@@ -113,22 +107,22 @@
                             echo lang("tax_code_short") . ": " . $invoice->client_tax_code . '<br>';
                         } ?>
                         <?php if ($invoice->client_address_1) {
-                            echo $invoice->client_address_1 . '<br>';
+                            echo htmlsc($invoice->client_address_1) . '<br>';
                         } ?>
                         <?php if ($invoice->client_address_2) {
-                            echo $invoice->client_address_2 . '<br>';
+                            echo htmlsc($invoice->client_address_2) . '<br>';
                         } ?>
                         <?php if ($invoice->client_city) {
-                            echo $invoice->client_city . ' ';
+                            echo htmlsc($invoice->client_city) . ' ';
                         } ?>
                         <?php if ($invoice->client_state) {
-                            echo $invoice->client_state . ' ';
+                            echo htmlsc($invoice->client_state) . ' ';
                         } ?>
                         <?php if ($invoice->client_zip) {
-                            echo $invoice->client_zip . '<br>';
+                            echo htmlsc($invoice->client_zip) . '<br>';
                         } ?>
                         <?php if ($invoice->client_phone) {
-                            echo trans('phone_abbr') . ': ' . $invoice->client_phone; ?>
+                            echo trans('phone_abbr') . ': ' . htmlsc($invoice->client_phone); ?>
                             <br>
                         <?php } ?>
                     </p>
@@ -154,7 +148,7 @@
                         <?php if ($payment_method): ?>
                             <tr>
                                 <td><?php echo trans('payment_method') . ': '; ?></td>
-                                <td><?php echo $payment_method->payment_method_name; ?></td>
+                                <td><?php _htmlsc($payment_method->payment_method_name); ?></td>
                             </tr>
                         <?php endif; ?>
                         </tbody>
@@ -181,9 +175,15 @@
                         <tbody>
                         <?php foreach ($items as $item) : ?>
                             <tr>
-                                <td><?php echo $item->item_name; ?></td>
-                                <td><?php echo nl2br($item->item_description); ?></td>
-                                <td class="amount"><?php echo format_amount($item->item_quantity); ?></td>
+                                <td><?php _htmlsc($item->item_name); ?></td>
+                                <td><?php echo nl2br(htmlsc($item->item_description)); ?></td>
+                                <td class="amount">
+                                    <?php echo format_amount($item->item_quantity); ?>
+                                    <?php if ($item->item_product_unit) : ?>
+                                        <br>
+                                        <small><?php _htmlsc($item->item_product_unit); ?></small>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="amount"><?php echo format_currency($item->item_price); ?></td>
                                 <td class="amount"><?php echo format_currency($item->item_discount); ?></td>
                                 <td class="amount"><?php echo format_currency($item->item_subtotal); ?></td>
@@ -192,7 +192,7 @@
                         <tr>
                             <td colspan="4"></td>
                             <td class="text-right"><?php echo trans('subtotal'); ?>:</td>
-                            <td class="amount"><?php echo format_currency($invoice->invoice_item_total); ?></td>
+                            <td class="amount"><?php echo format_currency($invoice->invoice_item_subtotal); ?></td>
                         </tr>
 
                         <?php if ($invoice->invoice_item_tax_total > 0) { ?>
@@ -207,7 +207,7 @@
                             <tr>
                                 <td class="no-bottom-border" colspan="4"></td>
                                 <td class="text-right">
-                                    <?php echo $invoice_tax_rate->invoice_tax_rate_name . ' ' . $invoice_tax_rate->invoice_tax_rate_percent; ?>
+                                    <?php echo htmlsc($invoice_tax_rate->invoice_tax_rate_name) . ' ' . format_amount($invoice_tax_rate->invoice_tax_rate_percent); ?>
                                     %
                                 </td>
                                 <td class="amount"><?php echo format_currency($invoice_tax_rate->invoice_tax_rate_amount); ?></td>
@@ -251,50 +251,51 @@
                 </div>
 
                 <?php if ($invoice->invoice_balance == 0) {
-                    echo '<img src="' . base_url('assets/default/img/paid.png') . '" class="paid-stamp">';
+                    echo '<img src="' . base_url('assets/core/img/paid.png') . '" class="paid-stamp">';
+                } ?>
+                <?php if ($is_overdue) {
+                    echo '<img src="' . base_url('assets/core/img/overdue.png') . '" class="overdue-stamp">';
                 } ?>
 
-                <hr>
+            </div><!-- .invoice-items -->
 
-                <div class="row">
+            <hr>
 
-                    <?php if ($invoice->invoice_terms) { ?>
-                        <div class="col-xs-12 col-md-6">
-                            <h4><?php echo trans('terms'); ?></h4>
-                            <p><?php echo nl2br($invoice->invoice_terms); ?></p>
+            <div class="row">
+
+                <?php if ($invoice->invoice_terms) { ?>
+                    <div class="col-xs-12 col-md-6">
+                        <h4><?php echo trans('terms'); ?></h4>
+                        <p><?php echo nl2br(htmlsc($invoice->invoice_terms)); ?></p>
+                    </div>
+                <?php } ?>
+
+                <?php
+                if (count($attachments) > 0) { ?>
+                    <div class="col-xs-12 col-md-6">
+                        <h4><?php echo trans('attachments'); ?></h4>
+                        <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <?php foreach ($attachments as $attachment) { ?>
+                                    <tr class="attachments">
+                                        <td><?php echo $attachment['name']; ?></td>
+                                        <td>
+                                            <a href="<?php echo base_url('/guest/get/attachment/' . $attachment['fullname']); ?>"
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fa fa-download"></i> <?php echo trans('download') ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </table>
                         </div>
-                    <?php } ?>
-
-                    <?php
-                    if (count($attachments) > 0) { ?>
-                        <div class="col-xs-12 col-md-6">
-                            <h4><?php echo trans('attachments'); ?></h4>
-                            <div class="table-responsive">
-                                <table class="table table-condensed">
-                                    <?php foreach ($attachments as $attachment) { ?>
-                                        <tr class="attachments">
-                                            <td><?php echo $attachment['name']; ?></td>
-                                            <td>
-                                                <a href="<?php echo $attachment['fullpath']; ?>"
-                                                   class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-download"></i> <?php echo trans('download') ?>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </table>
-                            </div>
-                        </div>
-                    <?php } ?>
-
-                </div>
+                    </div>
+                <?php } ?>
 
             </div>
 
-        </div>
-
-    </div>
-
+        </div><!-- .invoice-items -->
+    </div><!-- #content -->
 </div>
 
 </body>

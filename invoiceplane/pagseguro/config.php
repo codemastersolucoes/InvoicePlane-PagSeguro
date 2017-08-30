@@ -1,19 +1,25 @@
 <?php
 
-define("APP_ENVIRONMENT", "sandbox"); //sandbox or production
-define("APP_MAIL", ""); //PagSeguro user
-define("APP_TOKEN_SANDBOX", ""); //token sandbox
-define("APP_TOKEN_PRODUCTION", ""); //token production
+define("GATEWAY_MAIL", ""); //PagSeguro user mail
+define("GATEWAY_TOKEN", "");
+define("GATEWAY_URL_CHECKOUT", "https://ws.sandbox.pagseguro.uol.com.br/v2/checkout");
+//define("GATEWAY_URL_CHECKOUT", "https://ws.pagseguro.uol.com.br/v2/checkout");
+define("GATEWAY_URL_PAYMENT", "https://sandbox.pagseguro.uol.com.br/v2/checkout/payment.html");
+//define("GATEWAY_URL_PAYMENT", "https://pagseguro.uol.com.br/v2/checkout/payment.html");
+define("GATEWAY_URL_NOTIFICATIONS", "https://ws.sandbox.pagseguro.uol.com.br/v3/transactions/notifications");
+//define("GATEWAY_URL_NOTIFICATIONS", "https://ws.pagseguro.uol.com.br/v3/transactions/notifications");
 
-
-define("APP_CURRENCY", "BRL"); // true or false
-define("APP_CORPORATION", "");
-define("APP_PAYMENT_METHOD_ID", "1");
+define("GATEWAY_CURRENCY", "BRL"); //eg: BRL
+define("IP_PAYMENT_METHOD_ID", "3"); //eg: PagSeguro
 
 //Data Base
-define("APP_DB_LOCAL", "localhost");
-define("APP_DB_USER", "");
-define("APP_DB_NAME", "");
-define("APP_DB_PASS", "");
+define("IP_DB_LOCAL", "localhost");
+define("IP_DB_USER", "");
+define("IP_DB_NAME", "");
+define("IP_DB_PASS", "");
+
+//Data Base Connection
+$IP_DB_CONN = new PDO("mysql:host=". IP_DB_LOCAL .";dbname=". IP_DB_NAME .";charset=UTF8", IP_DB_USER, IP_DB_PASS);
+$IP_DB_CONN->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 ?>

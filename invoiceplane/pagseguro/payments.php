@@ -1,7 +1,7 @@
 <?php
 
 require "config.php";
-$endpoint = GATEWAY_URL_CHECKOUT ."/?email=". GATEWAY_MAIL ."&token=". GATEWAY_TOKEN ."&currency=". GATEWAY_CURRENCY ."&itemId1=". $_GET['number'] ."&itemDescription1=". rawurlencode($_GET['name'] ." - Fatura ". $_GET['number']) ."&itemAmount1=". $_GET['balance'] ."&itemQuantity1=1";
+$endpoint = GATEWAY_URL_CHECKOUT ."/?email=". GATEWAY_MAIL ."&token=". GATEWAY_TOKEN ."&currency=". GATEWAY_CURRENCY ."&itemId1=". $_REQUEST['number'] ."&itemDescription1=". rawurlencode($_REQUEST['name'] ." - Fatura ". $_REQUEST['number']) ."&itemAmount1=". $_REQUEST['balance'] ."&itemQuantity1=1";
 
 $curl = curl_init();
 curl_setopt_array($curl, array(

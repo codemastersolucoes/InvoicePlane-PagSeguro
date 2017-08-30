@@ -2,7 +2,7 @@
 
 header("access-control-allow-origin: https://sandbox.pagseguro.uol.com.br");
 require "config.php";
-$endpoint = GATEWAY_URL_NOTIFICATIONS ."/". $_POST['notificationCode'] ."?email=". GATEWAY_MAIL ."&token=". GATEWAY_TOKEN;
+$endpoint = GATEWAY_URL_NOTIFICATIONS ."/". $_REQUEST['notificationCode'] ."?email=". GATEWAY_MAIL ."&token=". GATEWAY_TOKEN;
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
@@ -75,12 +75,12 @@ if ( !$error ) {
     $textLog = "date: ". date('Y-m-d H:i:s') .", itemId1: ". $id .", status: ". $payStatus .";\n";
 
   } else {
-    $textLog = "date: ". date('Y-m-d H:i:s') .", itemId1: ". $id .", not found in database;\n";
+    $textLog = "date: ". date('Y-m-d H:i:s') .", notificationCode ". $_REQUEST['notificationCode'] .", not found;\n";
 
   }
 
 } else {
-  $textLog = "date: ". date('Y-m-d H:i:s') .", notificationCode ". $_POST['notificationCode'] .", error: ". $error .";\n";
+  $textLog = "date: ". date('Y-m-d H:i:s') .", notificationCode ". $_REQUEST['notificationCode'] .", error: ". $error .";\n";
 
 }
 
